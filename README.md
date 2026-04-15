@@ -54,6 +54,7 @@ First run takes longer (auth + full sync). After that it's incremental.
 
 | Flag | What it does |
 |------|-------------|
+| `./backup.sh --help` | Show all options |
 | `FORCE_REAUTH=1 ./backup.sh` | Force token refresh |
 | `INSTALL_SCHEDULE=1 ./backup.sh` | Enable weekly automated backups |
 | `UNINSTALL_SCHEDULE=1 ./backup.sh` | Remove automated backups |

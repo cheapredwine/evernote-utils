@@ -13,6 +13,35 @@
 
 set -euo pipefail
 
+# ── Help ────────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'EOF'
+Usage: ./backup.sh [OPTIONS]
+
+Evernote backup with hardened credential storage.
+
+OPTIONS:
+  -h, --help              Show this help message
+
+ENVIRONMENT:
+  EVERNOTE_BACKUP_DB      Path to database (default: ~/.evernote-backup/en_backup.db)
+  EVERNOTE_BACKUP_DEST    Archive destination (auto-detected: Google Drive or ~/Documents)
+  FORCE_REAUTH=1          Force token refresh
+  INSTALL_SCHEDULE=1      Enable weekly automated backups (Sundays 10am)
+  UNINSTALL_SCHEDULE=1    Remove automated backups
+
+EXAMPLES:
+  ./backup.sh                       # Run backup
+  FORCE_REAUTH=1 ./backup.sh        # Force re-authentication
+  INSTALL_SCHEDULE=1 ./backup.sh    # Enable weekly backups
+  ./backup.sh --help                # Show this help
+
+For more info: https://github.com/cheapredwine/evernote-utils
+EOF
+  exit 0
+fi
+
 # ── Config ──────────────────────────────────────────────────────
 
 KEYCHAIN_SERVICE="com.cheapredwine.evernote-backup"
@@ -130,6 +159,14 @@ detect_destination() {
   fi
 
   if [[ -d "$HOME/Library/CloudStorage" ]]; then
+    # Prefer personal Google Drive account
+    local personal_gd="$HOME/Library/CloudStorage/GoogleDrive-jason@sherron.com"
+    if [[ -d "$personal_gd/My Drive" ]]; then
+      echo "$personal_gd/My Drive/EvernoteBackups"
+      return
+    fi
+
+    # Fall back to any Google Drive
     local gd
     gd=$(find "$HOME/Library/CloudStorage" -maxdepth 1 -name "GoogleDrive-*" -type d 2>/dev/null | head -1)
     if [[ -n "$gd" && -d "$gd/My Drive" ]]; then
