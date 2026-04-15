@@ -27,7 +27,15 @@ SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 
 DATE=$(date +'%Y%m%d')
 EXPORT_DIR="$HOME/Desktop/Evernote-$DATE"
+MD_DIR="$HOME/Desktop/Evernote-Markdown-$DATE"
 ARCHIVE_NAME="evernote-$DATE.tar.gz"
+
+# Cleanup temp dirs on exit (even on failure)
+cleanup() {
+  [[ -d "$EXPORT_DIR" ]] && rm -rf "$EXPORT_DIR"
+  [[ -d "$MD_DIR" ]] && rm -rf "$MD_DIR"
+}
+trap cleanup EXIT
 
 # ── Helpers ─────────────────────────────────────────────────────
 
@@ -291,7 +299,6 @@ evernote-backup export -d "$DB" "$EXPORT_DIR/"
 
 # ── Step 8: Convert to Markdown (future-proofing) ───────────────
 
-MD_DIR="$HOME/Desktop/Evernote-Markdown-$DATE"
 log "Converting to Markdown..."
 mkdir -p "$MD_DIR"
 evernote2md "$EXPORT_DIR" "$MD_DIR"
@@ -304,9 +311,8 @@ tar -zcf "$ARCHIVE" \
   -C "$(dirname "$EXPORT_DIR")" "$(basename "$EXPORT_DIR")" \
   -C "$(dirname "$MD_DIR")" "$(basename "$MD_DIR")"
 
-# ── Step 10: Cleanup ────────────────────────────────────────────
+# ── Step 10: Done ───────────────────────────────────────────────
 
-rm -rf "$EXPORT_DIR" "$MD_DIR"
 log "Done. Backup saved to: $ARCHIVE"
 
 if [[ ! -t 0 ]]; then
