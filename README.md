@@ -5,7 +5,7 @@ macOS utilities for Evernote backup and note protection.
 This repo contains two independent tools that share authentication:
 
 - **`backup.sh`** — Automated backup with hardened credential storage
-- **`evernote-lock.py`** — Lock notes to prevent accidental edits
+- **`evernote-lock.py`** — Make notes read-only to prevent accidental edits
 
 Both use macOS Keychain for secure token storage.
 
@@ -96,7 +96,7 @@ once to complete re-authentication.
 
 ---
 
-## evernote-lock.py
+## evernote-lock.py (Read-Only Note Protection)
 
 Protect notes from accidental edits by setting the `contentClass`
 attribute, which makes them read-only in every Evernote client.
