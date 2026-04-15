@@ -1,20 +1,30 @@
 # evernote-utils
 
-Back up all Evernote notebooks with hardened credential storage.
+macOS utilities for Evernote backup and note protection.
 
-## What it does
+This repo contains two independent tools that share authentication:
 
-`backup.sh` is a single self-configuring script. Run it and it handles
-everything: installation, authentication, syncing, exporting, and
-archiving. There is no separate setup step.
+- **`backup.sh`** — Automated backup with hardened credential storage
+- **`evernote-lock.py`** — Lock notes to prevent accidental edits
 
-On first run it will:
+Both use macOS Keychain for secure token storage.
 
-1. Install `evernote-backup` and `evernote2md` via Homebrew if not present
-2. Initialize the local database and open OAuth in your browser
-3. Move the auth token from the database into macOS Keychain
-4. Sync all notebooks, export as `.enex`, convert to Markdown, archive
-5. Offer to set up weekly automated backups
+---
+
+## backup.sh
+
+Self-configuring Evernote backup. Run it and it handles everything:
+installation, authentication, syncing, exporting, and archiving.
+
+### What it does
+
+On first run:
+
+1. Installs `evernote-backup` and `evernote2md` via Homebrew if not present
+2. Initializes the local database and opens OAuth in your browser
+3. Moves the auth token from the database into macOS Keychain
+4. Syncs all notebooks, exports as `.enex`, converts to Markdown, archives
+5. Offers to set up weekly automated backups
 
 On subsequent runs it pulls the token from Keychain and gets to work.
 If the token expires, it re-authenticates automatically. If the
@@ -30,17 +40,16 @@ Each backup archive contains two copies of your notes:
   forever. If Evernote disappears tomorrow, you still have your notes
   in a universal format
 
-## Usage
+### Usage
 
 ```bash
 chmod +x backup.sh
 ./backup.sh
 ```
 
-That's it. First run takes longer (auth + full sync). After that
-it's incremental.
+First run takes longer (auth + full sync). After that it's incremental.
 
-### Flags
+#### Flags
 
 | Flag | What it does |
 |------|-------------|
@@ -48,7 +57,7 @@ it's incremental.
 | `INSTALL_SCHEDULE=1 ./backup.sh` | Enable weekly automated backups |
 | `UNINSTALL_SCHEDULE=1 ./backup.sh` | Remove automated backups |
 
-### Backup destination
+#### Backup destination
 
 Auto-detected in order:
 
@@ -58,13 +67,13 @@ Auto-detected in order:
 
 Override: `EVERNOTE_BACKUP_DEST=/your/path ./backup.sh`
 
-### Database location
+#### Database location
 
 Default: `~/.evernote-backup/en_backup.db`
 
 Override: `EVERNOTE_BACKUP_DB=/your/path/en_backup.db ./backup.sh`
 
-## Scheduling
+### Scheduling
 
 On first run, the script asks if you want weekly automated backups
 (Sundays at 10:00 AM via launchd). If you skip it:
@@ -85,11 +94,12 @@ If the token expires while on the automated schedule, the script
 sends a macOS notification and exits. Run `./backup.sh` manually
 once to complete re-authentication.
 
-## Note locking
+---
 
-`evernote-lock.py` protects notes from accidental edits by setting
-the `contentClass` attribute, which makes them read-only in every
-Evernote client.
+## evernote-lock.py
+
+Protect notes from accidental edits by setting the `contentClass`
+attribute, which makes them read-only in every Evernote client.
 
 ### How it works
 
@@ -128,10 +138,12 @@ Unlike `backup.sh`, this tool **writes to your Evernote account**
 or anything else. It also won't unlock notes that were locked by
 other applications.
 
+---
+
 ## Security model
 
 The Evernote API has no read-only token scope. Any token that can
-download notes can also modify them. This script reduces exposure:
+download notes can also modify them. These tools reduce exposure:
 
 - **Token lives in macOS Keychain, not on disk.** After authentication
   the token is extracted from the SQLite database and scrubbed. An
@@ -139,7 +151,7 @@ download notes can also modify them. This script reduces exposure:
   state, but no credential.
 
 - **Short-lived tokens.** During OAuth, choose 1-month duration. The
-  script warns 7 days before expiration and re-authenticates
+  backup script warns 7 days before expiration and re-authenticates
   automatically when expired.
 
 - **Runtime injection.** The token is passed via `--token` on each
@@ -158,12 +170,16 @@ Evernote blocks permanent deletion (`expunge`) for third-party tokens.
 A compromised token could trash or modify notes, but not permanently
 destroy them.
 
+---
+
 ## Prerequisites
 
 - macOS
 - Python 3.9+ (or Homebrew, which handles it)
 - Both `evernote-backup` and `evernote2md` are auto-installed via
-  Homebrew on first run
+  Homebrew on first run of `backup.sh`
+
+---
 
 ## Legacy
 
