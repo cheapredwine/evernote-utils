@@ -96,6 +96,28 @@ If the token expires while on the automated schedule, the script
 sends a macOS notification and exits. Run `./backup.sh` manually
 once to complete re-authentication.
 
+### Disaster Recovery
+
+If Evernote shuts down tomorrow, your data is still accessible:
+
+1. **Locate your backup archive** at:
+   ```
+   ~/Library/CloudStorage/GoogleDrive-jason@sherron.com/My Drive/EvernoteBackups/evernote-YYYYMMDD.tar.gz
+   ```
+
+2. **Extract it:**
+   ```bash
+   tar -zxf evernote-20240115.tar.gz
+   ```
+
+3. **Access your notes:**
+   - `Evernote-Markdown-YYYYMMDD/` — Plain `.md` files readable by any text editor
+   - `Evernote-YYYYMMDD/` — `.enex` files for importing into other apps (Joplin, Bear, etc.)
+
+**Important:** The Markdown files are completely standalone—no database, no proprietary format, no dependencies. Attachments are in subfolders next to their notes.
+
+**Note:** The local SQLite cache (`~/.evernote-backup/en_backup.db`) is NOT encrypted—it's a temporary working copy. Your permanent backups are the archives in your Google Drive.
+
 ---
 
 ## evernote-lock.py (Read-Only Note Protection)
