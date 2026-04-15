@@ -167,5 +167,11 @@ destroy them.
 
 ## Legacy
 
-The original `backup.applescript` is preserved for reference. It
-requires Evernote v7.x or earlier and does not work with Evernote v10+.
+The `legacy/` folder contains deprecated scripts preserved for reference:
+
+- **`backup.applescript`** — Original backup script for Evernote v7.x and earlier.
+  Does not work with Evernote v10+.
+
+- **`folder-import.applescript`** — Folder action script for auto-importing files.
+  Only works with Evernote v7.x and earlier; modern Evernote versions no longer
+  support the AppleScript interface this requires.
