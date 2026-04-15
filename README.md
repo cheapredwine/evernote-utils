@@ -1,6 +1,7 @@
 # evernote-utils
 
-macOS utilities for Evernote backup and note protection.
+macOS utilities for Evernote backup and note protection. These tools work via
+Evernote's API—no local Evernote app installation required.
 
 This repo contains two independent tools that share authentication:
 
